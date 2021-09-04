@@ -1,14 +1,15 @@
 //Object to represent the item widget
-function repoObject(rName,rDesc,sCount)
+function repoObject(rName,rDesc,sCount,lData)
 {
     this.repoName = rName
     this.repoDescription = rDesc
     this.starCount = sCount
+    this.languageData = lData
 }
 
-async function start()
+async function start(bar)
 {
-    let username = ""
+    let username = bar
     let infoArray = []
 
     //Generating required json files
@@ -20,17 +21,25 @@ async function start()
     //Creates an array of objects containing project name and description
     for(key in repoData)
     {
+        let languages = await fetch(repoData[key].languages_url)
+        let languageData = await languages.json()
+        let languageArray = []
+
+        for(i in languageData)
+            languageArray.push(i)
+
         let rObject = new repoObject(repoData[key].full_name.slice(username.length+1),
                                      repoData[key].description,
-                                     repoData[key].stargazers_count)
-        console.log(rObject)
+                                     repoData[key].stargazers_count,
+                                     languageArray)
+        
         infoArray.push(rObject)
+        console.log(infoArray[key].languageData)
     }
 
     // Required info for cv header
     let followerCount = userData.followers
     let followingCount = userData.following
-    console.log(followingCount)
     let location = userData.location
     let repoCount = userData.public_repos
     let imageUrl = userData.avatar_url
@@ -43,6 +52,6 @@ function search()
     if(bar=="")
         alert("Please enter a username");
     else
-        start()
+        start(bar)
 }
 
